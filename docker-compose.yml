@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_testovoe
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: project_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d project_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: backend_testovoe
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npm install && npm run schema:create && npm run start:dev"
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./static:/app/static
+
+  # frontend:
+  #   build: ./frontend
+  #   container_name: frontend_testovoe
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   stdin_open: true
+  #   tty: true
+
+volumes:
+  postgres_data:
