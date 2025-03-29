@@ -19,7 +19,7 @@ Stop-Process -Id (Get-NetTCPConnection -LocalPort 5432).OwningProcess -Force
 ### 🚀 Запуск проекта
 ```bash
 # Перейти в корень проекта
-cd папка_где_сохранен_проект
+cd forum
 
 # Запустить контейнеры
 docker-compose up
